@@ -3,7 +3,6 @@
 import pandas as pd
 import numpy as np
 from scipy import optimize
-import ar
 import ctc
 import rt
 import NBR9688
@@ -93,13 +92,20 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
             LTe = LTe + [root]
             Lq = Lq + [ctc.qc_f_c(U, Di + E/2, root, Ta) + ctc.qr(eps, root, Ta)]
     
+    #Adição do caso sem isolante e organização para o DataFrame.
+    LNM = ['Sem Isolante'] + LNM
+    LE_Disp_DF = [0] + LE_Disp*ni
+    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
+    LTe = [Ti] + LTe
+    Lq = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
+    
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
     
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
-                         'Espessura [mm]' : LE_Disp*ni,
-                         'Espessura [pol]' : LE_Disp_Imp*ni,
+                         'Espessura [mm]' : LE_Disp_DF,
+                         'Espessura [pol]' : LE_Disp_Imp_DF,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Fluxo de Calor [W/m^2]': Lq})
@@ -175,15 +181,22 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
             err = generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
-            Lq = Lq + [ctc.hc_n_ch(Di + E/2, root, Ta) + ctc.qr(eps, root, Ta)]
+            Lq = Lq + [ctc.qc_n_ch(Di + E/2, root, Ta) + ctc.qr(eps, root, Ta)]
+    
+    #Adição do caso sem isolante e organização para o DataFrame.
+    LNM = ['Sem Isolante'] + LNM
+    LE_Disp_DF = [0] + LE_Disp*ni
+    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
+    LTe = [Ti] + LTe
+    Lq = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
     
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
-                         'Espessura [mm]' : LE_Disp*ni,
-                         'Espessura [pol]' : LE_Disp_Imp*ni,
+                         'Espessura [mm]' : LE_Disp_DF,
+                         'Espessura [pol]' : LE_Disp_Imp_DF,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Fluxo de Calor [W/m^2]': Lq})
@@ -260,17 +273,46 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
             err = generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
-            Lq = Lq + [ctc.hc_n_cv(H, root, Ta, Di + E/2) + ctc.qr(eps, root, Ta)]
+            Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + E/2) + ctc.qr(eps, root, Ta)]
+    
+    #Adição do caso sem isolante e organização para o DataFrame.
+    LNM = ['Sem Isolante'] + LNM
+    LE_Disp_DF = [0] + LE_Disp*ni
+    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
+    LTe = [Ti] + LTe
+    Lq = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lq
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
     
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
-                         'Espessura [mm]' : LE_Disp*ni,
-                         'Espessura [pol]' : LE_Disp_Imp*ni,
+                         'Espessura [mm]' : LE_Disp_DF,
+                         'Espessura [pol]' : LE_Disp_Imp_DF,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Fluxo de Calor [W/m^2]': Lq})
     
+    return Disp
+
+
+
+# =============================================================================
+# Tubulações quaisquer.
+# =============================================================================
+
+def iso_tubes(Ti, Ta, Di, H, U, eps):
+    
+    if (U != 0):
+        
+        Disp = iso_tubes_for(Ti, Ta, Di, U, eps)
+        
+    if ((U == 0) and (H != 0)):
+        
+        Disp = iso_tubes_nat_v(Ti, Ta, H, Di, eps)
+        
+    if ((U == 0) and (H == 0)):
+        
+        Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
+        
     return Disp
