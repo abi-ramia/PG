@@ -32,7 +32,7 @@ def generate_err_tubes_for(Ti, Ta, Di, U, E, eps, flmd):
     
     def err_tubes_for(Te):
         
-        return (Te - Ti + (ctc.qc_f_c(U, Di + E/2, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + E/2, Di, flmd((Te+Ti)/2)))
+        return (Te - Ti + (ctc.qc_f_c(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
     
     return (err_tubes_for)
         
@@ -90,7 +90,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
             err = generate_err_tubes_for(Ti, Ta, Di, U, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
-            Lq = Lq + [ctc.qc_f_c(U, Di + E/2, root, Ta) + ctc.qr(eps, root, Ta)]
+            Lq = Lq + [ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
@@ -123,7 +123,7 @@ def generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd):
     
     def err_tubes_nat_h(Te):
         
-        return (Te - Ti + (ctc.qc_n_ch(Di + E/2, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + E/2, Di, flmd((Te+Ti)/2)))
+        return (Te - Ti + (ctc.qc_n_ch(Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
     
     return (err_tubes_nat_h)
         
@@ -181,7 +181,7 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
             err = generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
-            Lq = Lq + [ctc.qc_n_ch(Di + E/2, root, Ta) + ctc.qr(eps, root, Ta)]
+            Lq = Lq + [ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
@@ -214,7 +214,7 @@ def generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd):
     
     def err_tubes_nat_v(Te):
         
-        return (Te - Ti + (ctc.qc_n_cv(H, Te, Ta, Di + E/2) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + E/2, Di, flmd((Te+Ti)/2)))
+        return (Te - Ti + (ctc.qc_n_cv(H, Te, Ta, Di + 2*E) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
     
     return (err_tubes_nat_v)
 
@@ -273,7 +273,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
             err = generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
-            Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + E/2) + ctc.qr(eps, root, Ta)]
+            Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta)]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
@@ -302,7 +302,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
 # =============================================================================
 
 #Custo de energia perdida trazido para valor atual em $/(ano.m^2)
-def CE_VA(q, N, F, eta, j, n, i, delta):
+def CE_VA(q, N, F, eta, n, i, delta):
     
     CE = (3600*q*N*F)/eta
     
@@ -318,7 +318,7 @@ def CE_VA(q, N, F, eta, j, n, i, delta):
 # Tubulações quaisquer.
 # =============================================================================
 
-def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, j, n, i, delta):
+def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
     
     if (U != 0):
         
@@ -336,7 +336,7 @@ def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, j, n, i, delta):
     
     Lq = np.array(Lq)
     
-    Lq = CE_VA(Lq, N, F, eta, j, n, i, delta)
+    Lq = CE_VA(Lq, N, F, eta, n, i, delta)
     
     Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Lq
         
