@@ -298,10 +298,27 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
 
 
 # =============================================================================
+# Custo de energia perdida.
+# =============================================================================
+
+#Custo de energia perdida trazido para valor atual em $/(ano.m^2)
+def CE_VA(q, N, F, eta, j, n, i, delta):
+    
+    CE = (3600*q*N*F)/eta
+    
+    j = ((1 + i)/(1 + delta)) - 1
+    
+    f = (((1 + j)**n) - 1)/(j*((1 + j)**n))
+    
+    CEVA = f*CE
+    
+    return (CEVA)
+
+# =============================================================================
 # Tubulações quaisquer.
 # =============================================================================
 
-def iso_tubes(Ti, Ta, Di, H, U, eps):
+def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, j, n, i, delta):
     
     if (U != 0):
         
@@ -314,5 +331,13 @@ def iso_tubes(Ti, Ta, Di, H, U, eps):
     if ((U == 0) and (H == 0)):
         
         Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
+        
+    Lq = Disp['Fluxo de Calor [W/m^2]']
+    
+    Lq = np.array(Lq)
+    
+    Lq = CE_VA(Lq, N, F, eta, j, n, i, delta)
+    
+    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Lq
         
     return Disp
