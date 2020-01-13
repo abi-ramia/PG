@@ -86,7 +86,7 @@ def tmd20():
 # A temperatura máxima de utilização não é definida pela norma.
 # =============================================================================
 
-def tmx40():
+def tmx20():
     
     return(np.nan)
 

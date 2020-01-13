@@ -63,8 +63,8 @@ def lamedI(T):
     if t > 371:
         
         lamed = lin(t, 371, 260, 0.102, 0.087)
-    
-    return(True)
+        
+        return(lamed)
     
 # =============================================================================
 # Intervalo de temperatura média para o cálculo da condutividade térmica.
@@ -136,8 +136,8 @@ def lamedII(T):
     if t > 371:
         
         lamed = lin(t, 371, 260, 0.102, 0.087)
-    
-    return(True)
+        
+        return(lamed)
     
 # =============================================================================
 # Intervalo de temperatura média para o cálculo da condutividade térmica.
@@ -229,8 +229,6 @@ def lamedIII(T):
         lamed = lin(t, 538, 482, 0.111, 0.108)
         
         return(lamed)
-    
-    return(True)
     
 # =============================================================================
 # Intervalo de temperatura média para o cálculo da condutividade térmica.

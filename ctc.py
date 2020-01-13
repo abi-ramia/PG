@@ -163,8 +163,8 @@ def hc_n_cv(Lc, Te, Ta, De):
     
     Tf = (Te + Ta)/2
     
-    if De <= (35*Lc)/(((Ra(Lc,Te,Ta))/(ar.Pr(Tf)))**0.25):
-        print('O cilindro é esbelto e a correlação não é válida!')
+    #if De <= (35*Lc)/(((Ra(Lc,Te,Ta))/(ar.Pr(Tf)))**0.25):
+        #print('O cilindro é esbelto e a correlação pode não ser válida!')
     
     return (hc_n_ppv(Lc, Te, Ta))
 

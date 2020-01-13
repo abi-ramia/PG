@@ -5,6 +5,7 @@ import numpy as np
 from scipy import optimize
 import ctc
 import rt
+import ASTMC1728
 import NBR9688
 import NBR9909
 import NBR10412
@@ -50,14 +51,16 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     LE_Disp_Imp = [0.5*x for x in range (1, 31)]
     
     #Lista de funções de condutividade térmica.
-    LLMD = [NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+    LLMD = [ASTMC1728.lamed,
+            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
             NBR11722.lamed]
     
     #Lista de nomes de isolantes.
-    Lnm = ['Silicato de Cálcio Tipo I',
+    Lnm = ['Aerogel',
+           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
@@ -141,14 +144,16 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     LE_Disp_Imp = [0.5*x for x in range (1, 31)]
     
     #Lista de funções de condutividade térmica.
-    LLMD = [NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+    LLMD = [ASTMC1728.lamed,
+            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
             NBR11722.lamed]
     
     #Lista de nomes de isolantes.
-    Lnm = ['Silicato de Cálcio Tipo I',
+    Lnm = ['Aerogel',
+           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
@@ -233,14 +238,16 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     LE_Disp_Imp = [0.5*x for x in range(1,31)]
     
     #Lista de funções de condutividade térmica.
-    LLMD = [NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+    LLMD = [ASTMC1728.lamed,
+            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
             NBR11722.lamed]
     
     #Lista de nomes de isolantes.
-    Lnm = ['Silicato de Cálcio Tipo I',
+    Lnm = ['Aerogel',
+           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
