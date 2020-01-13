@@ -401,13 +401,7 @@ def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
     if ((U == 0) and (H == 0)):
         
         Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
-        
-    Lq = Disp['Fluxo de Calor (Face Externa) [W/m^2]']
     
-    Lq = np.array(Lq)
+    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Disp['Fluxo de Calor (Face Externa) [W/m^2]'].apply(lambda x : CE_VA(x, N, F, eta, n, i, delta))
     
-    LCEVA = CE_VA(Lq, N, F, eta, n, i, delta)
-    
-    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = LCEVA
-        
     return Disp
