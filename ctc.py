@@ -33,7 +33,7 @@ def emissividade(nome):
     'Massa Asfáltica'.
     """
 
-    emissividades = {'Alumínio': 0.15,
+    emissividades = {'Alumínio': 0.2,
                      'Tinta Preta': 0.97,
                      'Tinta de Alumínio': 0.5,
                      'Chapa de Aço' : 0.955,

@@ -85,22 +85,35 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     #Lista de soluções para a temperatura na face externa.
     LTe = []
     
-    #Lista de soluções para o fluxo de calor.
+    #Lista de soluções para a condutividade térmica.
+    Lslmd = []
+    
+    #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
+    
+    #Lista de diâmetros externos.
+    LDe = []
     
     for flmd in LLMD:
         for E in LE:
             err = generate_err_tubes_for(Ti, Ta, Di, U, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
+            Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
+            LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
     LE_Disp_DF = [0] + LE_Disp*ni
     LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
     LTe = [Ti] + LTe
+    Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
+    LDe = [Di] + LDe
+    
+    #Diâmetros externos em milímetros.
+    LDe_Disp = [1000*D for D in LDe]
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
@@ -109,9 +122,11 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     Disp = pd.DataFrame({'Material' : LNM,
                          'Espessura [mm]' : LE_Disp_DF,
                          'Espessura [pol]' : LE_Disp_Imp_DF,
+                         'Diâmetro Externo [mm]' : LDe_Disp,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
-                         'Fluxo de Calor [W/m^2]': Lq})
+                         'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
 
@@ -178,22 +193,35 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     #Lista de soluções para a temperatura na face externa.
     LTe = []
     
-    #Lista de soluções para o fluxo de calor.
+    #Lista de soluções para a condutividade térmica.
+    Lslmd = []
+    
+    #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
+    
+    #Lista de diâmetros externos.
+    LDe = []
     
     for flmd in LLMD:
         for E in LE:
             err = generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
+            Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
+            LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
     LE_Disp_DF = [0] + LE_Disp*ni
     LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
     LTe = [Ti] + LTe
+    Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
+    LDe = [Di] + LDe
+    
+    #Diâmetros externos em milímetros.
+    LDe_Disp = [1000*D for D in LDe]
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
@@ -202,9 +230,11 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     Disp = pd.DataFrame({'Material' : LNM,
                          'Espessura [mm]' : LE_Disp_DF,
                          'Espessura [pol]' : LE_Disp_Imp_DF,
+                         'Diâmetro Externo [mm]' : LDe_Disp,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
-                         'Fluxo de Calor [W/m^2]': Lq})
+                         'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
 
@@ -272,22 +302,35 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     #Lista de soluções para a temperatura na face externa.
     LTe = []
     
-    #Lista de soluções para o fluxo de calor.
+    #Lista de soluções para a condutividade térmica.
+    Lslmd = []
+    
+    #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
+    
+    #Lista de diâmetros externos.
+    LDe = []
     
     for flmd in LLMD:
         for E in LE:
             err = generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd)
             root = optimize.brentq(err, Ta, Ti)
             LTe = LTe + [root]
+            Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta)]
+            LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
     LNM = ['Sem Isolante'] + LNM
     LE_Disp_DF = [0] + LE_Disp*ni
     LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
     LTe = [Ti] + LTe
+    Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lq
+    LDe = [Di] + LDe
+    
+    #Diâmetros externos em milímetros.
+    LDe_Disp = [1000*D for D in LDe]
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
@@ -296,19 +339,21 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     Disp = pd.DataFrame({'Material' : LNM,
                          'Espessura [mm]' : LE_Disp_DF,
                          'Espessura [pol]' : LE_Disp_Imp_DF,
+                         'Diâmetro Externo [mm]' : LDe_Disp,
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
-                         'Fluxo de Calor [W/m^2]': Lq})
+                         'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
 
 
 
 # =============================================================================
-# Custo de energia perdida.
+# Custos.
 # =============================================================================
 
-#Custo de energia perdida trazido para valor atual em $/(ano.m^2)
+#Custo de energia perdida trazido para valor atual em $/(ano.m^2).
 def CE_VA(q, N, F, eta, n, i, delta):
     
     CE = (3600*q*N*F)/eta
@@ -320,6 +365,24 @@ def CE_VA(q, N, F, eta, n, i, delta):
     CEVA = f*CE
     
     return (CEVA)
+
+#Custo de investimanto no isolamento em $/(ano.m^2).
+def CI_VA(nome, Di, De):
+    
+    return (True)
+
+#Custo de manutenção do isolamento em $/(ano.m^2).
+def CM_VA(CIVA, tm, n, i):
+    
+    CM = tm*CIVA
+    
+    f = (((1+i)**n)-1)/(i*((1+i)**n))
+    
+    CMVA = f*CM
+    
+    return (CMVA)
+
+
 
 # =============================================================================
 # Tubulações quaisquer.
@@ -339,12 +402,12 @@ def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
         
         Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
         
-    Lq = Disp['Fluxo de Calor [W/m^2]']
+    Lq = Disp['Fluxo de Calor (Face Externa) [W/m^2]']
     
     Lq = np.array(Lq)
     
-    Lq = CE_VA(Lq, N, F, eta, n, i, delta)
+    LCEVA = CE_VA(Lq, N, F, eta, n, i, delta)
     
-    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Lq
+    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = LCEVA
         
     return Disp
