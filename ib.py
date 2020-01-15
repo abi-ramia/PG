@@ -52,7 +52,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     
     #Lista de funções de condutividade térmica.
     LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+            NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
@@ -60,7 +60,6 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     
     #Lista de nomes de isolantes.
     Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
@@ -91,6 +90,9 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
     
+    #Lista de soluções para o fluxo de calor na face interna.
+    Lqi = []
+    
     #Lista de diâmetros externos.
     LDe = []
     
@@ -101,6 +103,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
             LTe = LTe + [root]
             Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
+            Lqi = Lqi + [(ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
             LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
@@ -110,6 +113,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     LTe = [Ti] + LTe
     Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
+    Lqi = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lqi
     LDe = [Di] + LDe
     
     #Diâmetros externos em milímetros.
@@ -126,6 +130,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
                          'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
@@ -160,7 +165,7 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     
     #Lista de funções de condutividade térmica.
     LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+            NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
@@ -168,7 +173,6 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     
     #Lista de nomes de isolantes.
     Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
@@ -199,6 +203,9 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
     
+    #Lista de soluções para o fluxo de calor na face interna.
+    Lqi = []
+    
     #Lista de diâmetros externos.
     LDe = []
     
@@ -209,6 +216,7 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
             LTe = LTe + [root]
             Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
+            Lqi = Lqi + [(ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
             LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
@@ -218,6 +226,7 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
     LTe = [Ti] + LTe
     Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
+    Lqi = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lqi
     LDe = [Di] + LDe
     
     #Diâmetros externos em milímetros.
@@ -234,6 +243,7 @@ def iso_tubes_nat_h(Ti, Ta, Di, eps):
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
                          'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
@@ -269,7 +279,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     
     #Lista de funções de condutividade térmica.
     LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedI, NBR10662.lamedII, NBR10662.lamedIII,
+            NBR10662.lamedII, NBR10662.lamedIII,
             NBR10412.lamed60, NBR10412.lamed100,
             NBR11357.lamed,
             NBR11363.lamed,
@@ -277,7 +287,6 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     
     #Lista de nomes de isolantes.
     Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo I',
            'Silicato de Cálcio Tipo II',
            'Silicato de Cálcio Tipo III',
            'Feltro de Lamelas de Lã de Vidro D60',
@@ -308,6 +317,9 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
     
+    #Lista de soluções para o fluxo de calor na face interna.
+    Lqi = []
+    
     #Lista de diâmetros externos.
     LDe = []
     
@@ -318,6 +330,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
             LTe = LTe + [root]
             Lslmd = Lslmd + [flmd((root + Ti)/2)]
             Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta)]
+            Lqi = Lqi + [(ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
             LDe = LDe + [Di + 2*E]
     
     #Adição do caso sem isolante e organização para o DataFrame.
@@ -327,6 +340,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
     LTe = [Ti] + LTe
     Lslmd = [np.NaN] + Lslmd
     Lq = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lq
+    Lqi = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lqi
     LDe = [Di] + LDe
     
     #Diâmetros externos em milímetros.
@@ -343,6 +357,7 @@ def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
+                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
                          'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
     
     return Disp
