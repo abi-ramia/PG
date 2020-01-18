@@ -6,40 +6,233 @@ from scipy import optimize
 import ctc
 import rt
 import ASTMC1728
-import NBR9688
-import NBR9909
 import NBR10412
 import NBR10662
 import NBR11357
-import NBR11358
-import NBR11360
-import NBR11361
 import NBR11363
-import NBR11364
 import NBR11722
-import NBR11777
-import NBR13047
+
+
 
 # =============================================================================
-# Análise de Tubulações.
+# Tubulações horizontais em convecção combinada.
 # =============================================================================
 
-# =============================================================================
-# Tubulações em convecção forçada.
-# =============================================================================
-
-#Reduz o número de variáveis a um, a temperatura da face externa do isolante.
-def generate_err_tubes_for(Ti, Ta, Di, U, E, eps, flmd):
+#Reduz o número de variáveis a um, a temperatura na interface com o ar.
+def generate_err_tubes_for_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd):
+    
+    Di = de
     
     def err_tubes_for(Te):
         
-        return (Te - Ti + (ctc.qc_f_c(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
+        qdpp = ctc.qc_m_ch(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di + 2*E))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        TDi = Tde
+        
+        #TODO Caso se adicione manta de proteção, mude esta linha.
+        TDe = Te
+        
+        lmd_iso = flmd((TDe + TDi)/2)
+        
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso))
+        
+        return (Te - Te_calc)
     
     return (err_tubes_for)
+
+#Caso sem isolante.
+def generate_err_tubes_for_h_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
+    
+    Di = de
+    
+    def err_tubes_for(Te):
         
+        qdpp = ctc.qc_m_ch(U, Di, Te, Ta) + ctc.qr(eps, Te, Ta)
         
-#Função principal.
-def iso_tubes_for(Ti, Ta, Di, U, eps):
+        qdp = qdpp*(np.pi*(Di))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        Te_calc = Tde
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_for)
+
+# =============================================================================
+# Tubulações verticais em convecção combinada.
+# =============================================================================
+
+#Reduz o número de variáveis a um, a temperatura na interface com o ar.
+def generate_err_tubes_for_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd):
+    
+    Di = de
+    
+    def err_tubes_for(Te):
+        
+        qdpp = ctc.qc_m_cv(U, Di + 2*E, H, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di + 2*E))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        TDi = Tde
+        
+        #TODO Caso se adicione manta de proteção, mude esta linha.
+        TDe = Te
+        
+        lmd_iso = flmd((TDe + TDi)/2)
+        
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso))
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_for)
+
+#Caso sem isolante.
+def generate_err_tubes_for_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
+    
+    Di = de
+    
+    def err_tubes_for(Te):
+        
+        qdpp = ctc.qc_m_cv(U, Di, H, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        Te_calc = Tde
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_for)
+
+# =============================================================================
+# Tubulações horizontais em convecção natural.
+# =============================================================================
+
+#Reduz o número de variáveis a um, a temperatura na interface com o ar.
+def generate_err_tubes_nat_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd):
+    
+    Di = de
+    
+    def err_tubes_nat_h(Te):
+        
+        qdpp = ctc.qc_n_ch(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di + 2*E))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        TDi = Tde
+        
+        #TODO Caso se adicione manta de proteção, mude esta linha.
+        TDe = Te
+        
+        lmd_iso = flmd((TDe + TDi)/2)
+        
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso))
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_nat_h)
+
+#Caso em isolante.
+def generate_err_tubes_nat_h_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
+    
+    Di = de
+    
+    def err_tubes_nat_h(Te):
+        
+        qdpp = ctc.qc_n_ch(U, Di, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        Te_calc = Tde
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_nat_h)
+
+# =============================================================================
+# Tubulações verticais em convecção natural.
+# =============================================================================
+
+#Reduz o número de variáveis a um, a temperatura na interface com o ar.
+def generate_err_tubes_nat_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd):
+    
+    Di = de
+    
+    def err_tubes_nat_v(Te):
+        
+        qdpp = ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di + 2*E))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        TDi = Tde
+        
+        #TODO Caso se adicione manta de proteção, mude esta linha.
+        TDe = Te
+        
+        lmd_iso = flmd((TDe + TDi)/2)
+        
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso))
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_nat_v)
+
+#Caso sem isoalnte
+def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
+    
+    Di = de
+    
+    def err_tubes_nat_v(Te):
+        
+        qdpp = ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta)
+        
+        qdp = qdpp*(np.pi*(Di))
+        
+        Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
+        
+        Tde = Tdi - qdp*rt.rt_cond_cili(di, de, lmd_tube)
+        
+        Te_calc = Tde
+        
+        return (Te - Te_calc)
+    
+    return (err_tubes_nat_v)
+
+# =============================================================================
+# Função principal.
+# =============================================================================
+
+def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
+    
+    Di = de
     
     #Lista de espessuras consideradas.
     LE = [(12.7*x)/1000 for x in range(1, 31)]
@@ -74,47 +267,122 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
     #Número de isolantes considerados.
     ni = len(LLMD)
     
+    #Lista de espessuras para o DataFrame.
+    LE_Disp_DF = [0] + LE_Disp*ni
+    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
+    
     #Lista de nomes para o DataFrame.
-    LNM = []
+    LNM = ['Sem Isolante']
     
     for d in Lnm:
         
         LNM += [d]*ne
     
+    #FIXME Achar Te sem isolante...
     #Lista de soluções para a temperatura na face externa.
     LTe = []
     
     #Lista de soluções para a condutividade térmica.
-    Lslmd = []
+    Lslmd = [np.NaN]
     
+    #FIXME Achar q sem isolante...
     #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
     
-    #Lista de soluções para o fluxo de calor na face interna.
-    Lqi = []
-    
     #Lista de diâmetros externos.
-    LDe = []
+    LDe = [de]
     
-    for flmd in LLMD:
-        for E in LE:
-            err = generate_err_tubes_for(Ti, Ta, Di, U, E, eps, flmd)
-            root = optimize.brentq(err, Ta, Ti)
-            LTe = LTe + [root]
-            Lslmd = Lslmd + [flmd((root + Ti)/2)]
-            Lq = Lq + [ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
-            Lqi = Lqi + [(ctc.qc_f_c(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
-            LDe = LDe + [Di + 2*E]
-    
-    #Adição do caso sem isolante e organização para o DataFrame.
-    LNM = ['Sem Isolante'] + LNM
-    LE_Disp_DF = [0] + LE_Disp*ni
-    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
-    LTe = [Ti] + LTe
-    Lslmd = [np.NaN] + Lslmd
-    Lq = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
-    Lqi = [ctc.qc_f_c(U, Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lqi
-    LDe = [Di] + LDe
+    if ((U != 0) and (H == 0)):
+        
+        errf0 = generate_err_tubes_for_h_si
+        
+        err0 = errf0(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps)
+        
+        root0 = optimize.brentq(err0, Ta, Ti)
+        
+        LTe = [root0]
+        
+        Lq = [(ctc.qc_m_ch(U, Di, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
+        
+        errf = generate_err_tubes_for_h
+        
+        for flmd in LLMD:
+            for E in LE:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+        
+    if ((U != 0) and (H != 0)):
+        
+        errf0 = generate_err_tubes_for_v_si
+        
+        err0 = errf0(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps)
+        
+        root0 = optimize.brentq(err0, Ta, Ti)
+        
+        LTe = [root0]
+        
+        Lq = [(ctc.qc_m_cv(U, Di, H, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
+        
+        errf = generate_err_tubes_for_v
+        
+        for flmd in LLMD:
+            for E in LE:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+        
+    if ((U == 0) and (H == 0)):
+        
+        errf0 = generate_err_tubes_nat_h_si
+        
+        err0 = errf0(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps)
+        
+        root0 = optimize.brentq(err0, Ta, Ti)
+        
+        LTe = [root0]
+        
+        Lq = [(ctc.qc_n_ch(U, Di, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
+        
+        errf = generate_err_tubes_nat_h
+        
+        for flmd in LLMD:
+            for E in LE:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+        
+    if ((U == 0) and (H != 0)):
+        
+        errf0 = generate_err_tubes_nat_v_si
+        
+        err0 = errf0(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps)
+        
+        root0 = optimize.brentq(err0, Ta, Ti)
+        
+        LTe = [root0]
+        
+        Lq = [(ctc.qc_n_cv(U, H, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
+        
+        errf = generate_err_tubes_nat_v
+        
+        for flmd in LLMD:
+            for E in LE:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
     
     #Diâmetros externos em milímetros.
     LDe_Disp = [1000*D for D in LDe]
@@ -130,235 +398,7 @@ def iso_tubes_for(Ti, Ta, Di, U, eps):
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
-                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
-                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
-    
-    return Disp
-
-
-
-# =============================================================================
-# Tubulações horizontais em convecção natural.
-# =============================================================================
-
-#Reduz o número de variáveis a um, a temperatura da face externa do isolante.
-def generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd):
-    
-    def err_tubes_nat_h(Te):
-        
-        return (Te - Ti + (ctc.qc_n_ch(Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
-    
-    return (err_tubes_nat_h)
-        
-        
-#Função principal.
-def iso_tubes_nat_h(Ti, Ta, Di, eps):
-    
-    #Lista de espessuras consideradas.
-    LE = [(12.7*x)/1000 for x in range(1, 31)]
-    
-    #Lista de espessuras consideradas arredondadas.
-    LE_Disp = [(int(12.7*x)) for x in range(1,31)]
-    
-    #Lista de espessuras consideradas em polegadas.
-    LE_Disp_Imp = [0.5*x for x in range (1, 31)]
-    
-    #Lista de funções de condutividade térmica.
-    LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedII, NBR10662.lamedIII,
-            NBR10412.lamed60, NBR10412.lamed100,
-            NBR11357.lamed,
-            NBR11363.lamed,
-            NBR11722.lamed]
-    
-    #Lista de nomes de isolantes.
-    Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo II',
-           'Silicato de Cálcio Tipo III',
-           'Feltro de Lamelas de Lã de Vidro D60',
-           'Feltro de Lamelas de Lã de Vidro D100',
-           'Tubo de Lã de Vidro',
-           'Tubo de Lã de Rocha',
-           'Feltro de Lamelas de Lã de Rocha']
-    
-    #Número de espessuras consideradas.
-    ne = len(LE)
-    
-    #Número de isolantes considerados.
-    ni = len(LLMD)
-    
-    #Lista de nomes para o DataFrame.
-    LNM = []
-    
-    for d in Lnm:
-        
-        LNM += [d]*ne
-    
-    #Lista de soluções para a temperatura na face externa.
-    LTe = []
-    
-    #Lista de soluções para a condutividade térmica.
-    Lslmd = []
-    
-    #Lista de soluções para o fluxo de calor na face externa.
-    Lq = []
-    
-    #Lista de soluções para o fluxo de calor na face interna.
-    Lqi = []
-    
-    #Lista de diâmetros externos.
-    LDe = []
-    
-    for flmd in LLMD:
-        for E in LE:
-            err = generate_err_tubes_nat_h(Ti, Ta, Di, E, eps, flmd)
-            root = optimize.brentq(err, Ta, Ti)
-            LTe = LTe + [root]
-            Lslmd = Lslmd + [flmd((root + Ti)/2)]
-            Lq = Lq + [ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta)]
-            Lqi = Lqi + [(ctc.qc_n_ch(Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
-            LDe = LDe + [Di + 2*E]
-    
-    #Adição do caso sem isolante e organização para o DataFrame.
-    LNM = ['Sem Isolante'] + LNM
-    LE_Disp_DF = [0] + LE_Disp*ni
-    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
-    LTe = [Ti] + LTe
-    Lslmd = [np.NaN] + Lslmd
-    Lq = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lq
-    Lqi = [ctc.qc_n_ch(Di, Ti, Ta) + ctc.qr(eps, Ti, Ta)] + Lqi
-    LDe = [Di] + LDe
-    
-    #Diâmetros externos em milímetros.
-    LDe_Disp = [1000*D for D in LDe]
-    
-    #Lista de soluções para a temperatura na face externa em °C.
-    Lte = [(Te - 273.15) for Te in LTe]
-    
-    #Organização dos dados em um DataFrame.
-    Disp = pd.DataFrame({'Material' : LNM,
-                         'Espessura [mm]' : LE_Disp_DF,
-                         'Espessura [pol]' : LE_Disp_Imp_DF,
-                         'Diâmetro Externo [mm]' : LDe_Disp,
-                         'Temperatura [K]' : LTe,
-                         'Temperatura [°C]' : Lte,
-                         'Condutividade Térmica [W/(m.k)]': Lslmd,
-                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
-                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
-    
-    return Disp
-
-
-
-# =============================================================================
-# Tubulações verticais em convecção natural.
-# =============================================================================
-
-#Reduz o número de variáveis a um, a temperatura da face externa do isolante.
-def generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd):
-    
-    def err_tubes_nat_v(Te):
-        
-        return (Te - Ti + (ctc.qc_n_cv(H, Te, Ta, Di + 2*E) + ctc.qr(eps, Te, Ta))*rt.rt_cond_cili(Di + 2*E, Di, flmd((Te+Ti)/2)))
-    
-    return (err_tubes_nat_v)
-
-
-
-#Função principal.
-def iso_tubes_nat_v(Ti, Ta, H, Di, eps):
-    
-    #Lista de espessuras consideradas.
-    LE = [(12.7*x)/1000 for x in range(1,31)]
-    
-    #Lista de espessuras consideradas arredondadas.
-    LE_Disp = [(int(12.7*x)) for x in range(1,31)]
-    
-    #Lista de espessuras consideradas em polegadas.
-    LE_Disp_Imp = [0.5*x for x in range(1,31)]
-    
-    #Lista de funções de condutividade térmica.
-    LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedII, NBR10662.lamedIII,
-            NBR10412.lamed60, NBR10412.lamed100,
-            NBR11357.lamed,
-            NBR11363.lamed,
-            NBR11722.lamed]
-    
-    #Lista de nomes de isolantes.
-    Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo II',
-           'Silicato de Cálcio Tipo III',
-           'Feltro de Lamelas de Lã de Vidro D60',
-           'Feltro de Lamelas de Lã de Vidro D100',
-           'Tubo de Lã de Vidro',
-           'Tubo de Lã de Rocha',
-           'Feltro de Lamelas de Lã de Rocha']
-    
-    #Número de espessuras consideradas.
-    ne = len(LE)
-    
-    #Número de isolantes considerados.
-    ni = len(LLMD)
-    
-    #Lista de nomes para o DataFrame.
-    LNM = []
-    
-    for d in Lnm:
-        
-        LNM += [d]*ne
-    
-    #Lista de soluções para a temperatura na face externa.
-    LTe = []
-    
-    #Lista de soluções para a condutividade térmica.
-    Lslmd = []
-    
-    #Lista de soluções para o fluxo de calor na face externa.
-    Lq = []
-    
-    #Lista de soluções para o fluxo de calor na face interna.
-    Lqi = []
-    
-    #Lista de diâmetros externos.
-    LDe = []
-    
-    for flmd in LLMD:
-        for E in LE:
-            err = generate_err_tubes_nat_v(Ti, Ta, H, Di, E, eps, flmd)
-            root = optimize.brentq(err, Ta, Ti)
-            LTe = LTe + [root]
-            Lslmd = Lslmd + [flmd((root + Ti)/2)]
-            Lq = Lq + [ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta)]
-            Lqi = Lqi + [(ctc.qc_n_cv(H, root, Ta, Di + 2*E) + ctc.qr(eps, root, Ta))*((Di + 2*E)/(Di))]
-            LDe = LDe + [Di + 2*E]
-    
-    #Adição do caso sem isolante e organização para o DataFrame.
-    LNM = ['Sem Isolante'] + LNM
-    LE_Disp_DF = [0] + LE_Disp*ni
-    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
-    LTe = [Ti] + LTe
-    Lslmd = [np.NaN] + Lslmd
-    Lq = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lq
-    Lqi = [ctc.qc_n_cv(H, Ti, Ta, Di) + ctc.qr(eps, Ti, Ta)] + Lqi
-    LDe = [Di] + LDe
-    
-    #Diâmetros externos em milímetros.
-    LDe_Disp = [1000*D for D in LDe]
-    
-    #Lista de soluções para a temperatura na face externa em °C.
-    Lte = [(Te - 273.15) for Te in LTe]
-    
-    #Organização dos dados em um DataFrame.
-    Disp = pd.DataFrame({'Material' : LNM,
-                         'Espessura [mm]' : LE_Disp_DF,
-                         'Espessura [pol]' : LE_Disp_Imp_DF,
-                         'Diâmetro Externo [mm]' : LDe_Disp,
-                         'Temperatura [K]' : LTe,
-                         'Temperatura [°C]' : Lte,
-                         'Condutividade Térmica [W/(m.k)]': Lslmd,
-                         'Fluxo de Calor (Face Interna) [W/(m^2)]' : Lqi,
-                         'Fluxo de Calor (Face Externa) [W/m^2]': Lq})
+                         'Fluxo de Calor [W/m]': Lq})
     
     return Disp
 
@@ -403,20 +443,20 @@ def CM_VA(CIVA, tm, n, i):
 # Tubulações quaisquer.
 # =============================================================================
 
-def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
-    
-    if (U != 0):
-        
-        Disp = iso_tubes_for(Ti, Ta, Di, U, eps)
-        
-    if ((U == 0) and (H != 0)):
-        
-        Disp = iso_tubes_nat_v(Ti, Ta, H, Di, eps)
-        
-    if ((U == 0) and (H == 0)):
-        
-        Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
-    
-    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Disp['Fluxo de Calor (Face Externa) [W/m^2]'].apply(lambda x : CE_VA(x, N, F, eta, n, i, delta))
-    
-    return Disp
+#def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
+#    
+#    if (U != 0):
+#        
+#        Disp = iso_tubes_for(Ti, Ta, Di, U, eps)
+#        
+#    if ((U == 0) and (H != 0)):
+#        
+#        Disp = iso_tubes_nat_v(Ti, Ta, H, Di, eps)
+#        
+#    if ((U == 0) and (H == 0)):
+#        
+#        Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
+#    
+#    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Disp['Fluxo de Calor (Face Externa) [W/m^2]'].apply(lambda x : CE_VA(x, N, F, eta, n, i, delta))
+#    
+#    return Disp

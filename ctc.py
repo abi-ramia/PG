@@ -104,7 +104,7 @@ def qr(epsilon, Te, Ta):
 
 
 # =============================================================================
-# Convecção natural.
+# Convecção natural. A variável U é requerida apenas por coerência interna.
 # =============================================================================
 
 # =============================================================================
@@ -112,7 +112,7 @@ def qr(epsilon, Te, Ta):
 # plana vertical. Input em m e K, output em W/(m^2.K).
 # =============================================================================
 
-def hc_n_ppv(Lc, Te, Ta):
+def hc_n_ppv(U, Lc, Te, Ta):
     
     ''' Dimensão característica: Altura '''
     
@@ -146,9 +146,9 @@ def hc_n_ppv(Lc, Te, Ta):
     
     return (hc)
 
-def qc_n_ppv(Lc, Te, Ta):
+def qc_n_ppv(U, Lc, Te, Ta):
     
-    hc = hc_n_ppv(Lc, Te, Ta)
+    hc = hc_n_ppv(U, Lc, Te, Ta)
     
     return (hc*(Te-Ta))
 
@@ -157,103 +157,24 @@ def qc_n_ppv(Lc, Te, Ta):
 # vertical. Input em m e K, output em W/(m^2.K).
 # =============================================================================
     
-def hc_n_cv(Lc, Te, Ta, De):
+def hc_n_cv(U, Lc, Te, Ta):
     
     ''' Dimensão característica: Altura '''
-    
-    Tf = (Te + Ta)/2
-    
-    #if De <= (35*Lc)/(((Ra(Lc,Te,Ta))/(ar.Pr(Tf)))**0.25):
-        #print('O cilindro é esbelto e a correlação pode não ser válida!')
-    
-    return (hc_n_ppv(Lc, Te, Ta))
+       
+    return (hc_n_ppv(U, Lc, Te, Ta))
 
-def qc_n_cv(Lc, Te, Ta, De):
+def qc_n_cv(U, Lc, Te, Ta):
     
-    hc = hc_n_cv(Lc, Te, Ta, De)
+    hc = hc_n_cv(U, Lc, Te, Ta)
     
     return (hc*(Te - Ta))
-
-# =============================================================================
-# Coeficiente de transferência de calor por convecção natural em uma placa
-# plana horizontal (face quente voltada para cima). Input em m e K, output em
-# W/(m^2.K).
-# =============================================================================
-
-def hc_n_pph_c(Lc, Te, Ta):
-    
-    ''' Dimensão característica: Área/Perímetro '''
-    
-    Tf = (Te + Ta)/2
-    
-    PrL = ar.Pr(Tf)
-    
-    RaL = Ra(Lc, Te, Ta)
-    
-    if RaL < (10**7):
-        
-        NuL = 0.54*(RaL**0.25)
-        
-        if (RaL < 10**4) or (PrL < 0.7):
-            
-            print('hc_n_pph_c pode estar fora de sua faixa')
-            
-    else:
-        
-        NuL = 0.15*(RaL**(1.0/3.0))
-        
-        if RaL > 10**11:
-            
-            print('hc_n_pph_c pode estar fora de sua faixa')
-            
-    hc = (NuL*(ar.lamed(Tf)))/Lc
-            
-    return (hc)
-
-def qc_n_pph_c(Lc, Te, Ta):
-    
-    hc = hc_n_pph_c(Lc, Te, Ta)
-    
-    return(hc*(Te-Ta))
-
-# =============================================================================
-# Coeficiente de transferência de calor por convecção natural em uma placa
-# plana horizontal (face quente voltada para baixo). Input em m e K, output em
-# W/(m^2.K).
-# =============================================================================
-
-def hc_n_pph_b(Lc, Te, Ta):
-    
-    ''' Dimensão característica: Área/Perímetro '''
-    
-    Tf = (Te + Ta)/2
-    
-    PrL = ar.Pr(Tf)
-    
-    RaL = Ra(Lc, Te, Ta)
-    
-    NuL = 0.52*(RaL**0.20)
-    
-    if (RaL < 10**4) or (RaL > 10**9) or (PrL < 0.7):
-        
-        print('hc_n_pph_b pode estar fora de sua faixa')
-    
-    hc = (NuL*(ar.lamed(Tf)))/Lc
-    
-    return (hc)
-
-def qc_n_pph_b(Lc, Te, Ta):
-    
-    hc = hc_n_pph_b(Lc, Te, Ta)
-    
-    return (hc*(Te-Ta))
 
 # =============================================================================
 # Coeficiente de transferência de calor por convecção natural em um cilindro
 # horizontal. Input em m e K, output em W/(m^2.K).
 # =============================================================================
 
-def hc_n_ch(Lc, Te, Ta):
+def hc_n_ch(U, Lc, Te, Ta):
     
     ''' Dimensão característica: Diâmetro Externo '''
     
@@ -275,9 +196,9 @@ def hc_n_ch(Lc, Te, Ta):
     
     return (hc)
 
-def qc_n_ch(Lc, Te, Ta):
+def qc_n_ch(U, Lc, Te, Ta):
     
-    hc = hc_n_ch(Lc, Te, Ta)
+    hc = hc_n_ch(U, Lc, Te, Ta)
     
     return (hc*(Te-Ta))
 
@@ -286,35 +207,6 @@ def qc_n_ch(Lc, Te, Ta):
 # =============================================================================
 # Convecção forçada.
 # =============================================================================
-
-# =============================================================================
-# Coeficiente de transferência de calor por convecção forçada em uma placa 
-# plana. Input em m/s, m e K, output em W/(m^2.K).
-# =============================================================================
-
-def hc_f_pp(U, Lc, Te, Ta):
-    
-    Tf = (Te + Ta)/2
-    
-    PrL = ar.Pr(Tf)
-    
-    ReL = Re(U, Lc, Te, Ta)
-    
-    if ReL < 5*(10**5):
-        
-        hc = 0.664*(ReL**0.5)*(PrL**(1.0/3.0))*(ar.lamed(Tf))/Lc
-        
-    else:
-        
-        hc = (0.037*(ReL**0.8) - 871)*(PrL**(1.0/3.0))*(ar.lamed(Tf))/Lc
-        
-    return (hc)
-
-def qc_f_pp(U, Lc, Te, Ta):
-    
-    hc = hc_f_pp(U, Lc, Te, Ta)
-    
-    return (hc*(Te-Ta))
 
 # =============================================================================
 # Coeficiente de transferência de calor por convecção forçada em um cilindro.
@@ -352,3 +244,51 @@ def qc_f_c(U, Lc, Te, Ta):
     hc = hc_f_c(U, Lc, Te, Ta)
     
     return (hc*(Te-Ta))
+
+
+
+# =============================================================================
+# Convecção mista.
+# =============================================================================
+
+# =============================================================================
+# Coeficiente de transferência de calor por convecção mista em um cilindro
+# horizontal. Input em m/s, m e K, output em W/(m^2.K).
+# =============================================================================
+
+def hc_m_ch(U, Lc, Te, Ta):
+    
+    hf = hc_f_c(U, Lc, Te, Ta)
+    
+    hn = hc_n_ch(U, Lc, Te, Ta)
+    
+    hm = ((hf**4)+(hn**4))**(0.25)
+    
+    return(hm)
+
+def qc_m_ch(U, Lc, Te, Ta):
+    
+    hm = hc_m_ch(U, Lc, Te, Ta)
+    
+    return (hm*(Te-Ta))
+
+# =============================================================================
+# Coeficiente de transferência de calor por convecção mista em um cilindro
+# horizontal. Input em m/s, m e K, output em W/(m^2.K).
+# =============================================================================
+
+def hc_m_cv(U, D, H, Te, Ta):
+    
+    hf = hc_f_c(U, D, Te, Ta)
+    
+    hn = hc_n_cv(U, H, Te, Ta)
+    
+    hm = ((hf**4)+(hn**4))**(0.25)
+    
+    return(hm)
+
+def qc_m_cv(U, D, H, Te, Ta):
+    
+    hm = hc_m_cv(U, D, H, Te, Ta)
+    
+    return (hm*(Te-Ta))
