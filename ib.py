@@ -230,7 +230,7 @@ def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
 # Função principal.
 # =============================================================================
 
-def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
+def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h):
     
     Di = de
     
@@ -278,19 +278,26 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
         
         LNM += [d]*ne
     
-    #FIXME Achar Te sem isolante...
     #Lista de soluções para a temperatura na face externa.
     LTe = []
     
     #Lista de soluções para a condutividade térmica.
     Lslmd = [np.NaN]
     
-    #FIXME Achar q sem isolante...
     #Lista de soluções para o fluxo de calor na face externa.
     Lq = []
     
     #Lista de diâmetros externos.
     LDe = [de]
+    
+    #Lista de taxas de formação de condensado.
+    LFC = []
+    
+    #Lista de resistências térmicas.
+    LR = []
+    
+    #Lista de variações de temperatura do fluido.
+    LVT = []
     
     if ((U != 0) and (H == 0)):
         
@@ -304,6 +311,8 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
         
         Lq = [(ctc.qc_m_ch(U, Di, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
         
+        LR = [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+((((rt.rt_conv_cili(de,ctc.hc_m_ch(U,de,root0,Ta)))**(-1))+((rt.rt_crad_cili(de,ctc.hr(eps,root0,Ta)))**(-1)))**(-1)))/z]
+        
         errf = generate_err_tubes_for_h
         
         for flmd in LLMD:
@@ -314,6 +323,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di+2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U != 0) and (H != 0)):
         
@@ -327,6 +337,8 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
         
         Lq = [(ctc.qc_m_cv(U, Di, H, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
         
+        LR = [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+((((rt.rt_conv_cili(Di,ctc.hc_m_cv(U,Di,H,root0,Ta)))**(-1))+((rt.rt_crad_cili(Di,ctc.hr(eps,root0,Ta)))**(-1)))**(-1)))/z]
+        
         errf = generate_err_tubes_for_v
         
         for flmd in LLMD:
@@ -337,6 +349,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_cv(U,Di + 2*E,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U == 0) and (H == 0)):
         
@@ -350,6 +363,8 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
         
         Lq = [(ctc.qc_n_ch(U, Di, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
         
+        LR = [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+((((rt.rt_conv_cili(de,ctc.hc_n_ch(U,de,root0,Ta)))**(-1))+((rt.rt_crad_cili(de,ctc.hr(eps,root0,Ta)))**(-1)))**(-1)))/z]
+        
         errf = generate_err_tubes_nat_h
         
         for flmd in LLMD:
@@ -360,6 +375,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U == 0) and (H != 0)):
         
@@ -373,6 +389,8 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
         
         Lq = [(ctc.qc_n_cv(U, H, root0, Ta) + ctc.qr(eps, root0, Ta))*(np.pi*(Di))]
         
+        LR = [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+((((rt.rt_conv_cili(de,ctc.hc_n_cv(U,H,root0,Ta)))**(-1))+((rt.rt_crad_cili(de,ctc.hr(eps,root0,Ta)))**(-1)))**(-1)))/z]
+        
         errf = generate_err_tubes_nat_v
         
         for flmd in LLMD:
@@ -383,12 +401,23 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
-    
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]            
+            
     #Diâmetros externos em milímetros.
     LDe_Disp = [1000*D for D in LDe]
     
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
+    
+    #Nome da coluna de queda de temperatura ou de formação de condensado.
+    if (fase_change):
+        noc = 'Formação de Condensado [kg/s]'
+        LFC = list(map(lambda x: (x*z)/c_or_h, Lq))
+        Lnoc = LFC
+    else:
+        noc = 'Variação de Temperatura do Fluido [°C]'
+        LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c_or_h*x))),LR))
+        Lnoc = LVT
     
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
@@ -398,7 +427,8 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps):
                          'Temperatura [K]' : LTe,
                          'Temperatura [°C]' : Lte,
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
-                         'Fluxo de Calor [W/m]': Lq})
+                         'Fluxo de Calor [W/m]': Lq,
+                          noc : Lnoc})
     
     return Disp
 
