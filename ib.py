@@ -299,6 +299,9 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     #Lista de variações de temperatura do fluido.
     LVT = []
     
+    #Lista de temperaturas na saída.
+    LTS = []
+    
     if ((U != 0) and (H == 0)):
         
         errf0 = generate_err_tubes_for_h_si
@@ -323,7 +326,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di+2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U != 0) and (H != 0)):
         
@@ -429,6 +432,10 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                          'Condutividade Térmica [W/(m.k)]': Lslmd,
                          'Fluxo de Calor [W/m]': Lq,
                           noc : Lnoc})
+    
+    if (not(fase_change)):
+        LTS = list(map(lambda x: Ti - 273.15 - x, LVT))
+        Disp['Temperatura do Fluido na Saída [°C]'] = LTS
     
     return Disp
 
