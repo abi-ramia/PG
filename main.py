@@ -23,10 +23,10 @@ h_fld = 10
 lmd_tube = 60
 
 #Velocidade do vento em m/s. Caso convecção natural, U = 0.
-U = 2.4
+U = 0
 
 #Altura da tubulação em m, caso vertical.
-H = 0
+H = 3
 
 #comprimento da tubulação em m.
 z = 1500

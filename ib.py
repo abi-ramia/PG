@@ -6,6 +6,7 @@ from scipy import optimize
 import ctc
 import rt
 import ASTMC1728
+import NBR9688
 import NBR10412
 import NBR10662
 import NBR11357
@@ -235,48 +236,79 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     Di = de
     
     #Lista de espessuras consideradas.
-    LE = [(12.7*x)/1000 for x in range(1, 31)]
+    LE1 = [(6.35*x)/1000 for x in range(1, 9)]
+    LE2 = [(6.35*x)/1000 for x in range(1, 17)]
+    LE3 = [(12.7*x)/1000 for x in range(1, 31)]
     
     #Lista de espessuras consideradas arredondadas.
-    LE_Disp =  [(int(12.7*x)) for x in range(1,31)]
+    LE_Disp1 =  [(int(x)) for x in LE1]
+    LE_Disp2 =  [(int(x)) for x in LE2]
+    LE_Disp3 =  [(int(x)) for x in LE3]
     
     #Lista de espessuras consideradas em polegadas.
-    LE_Disp_Imp = [0.5*x for x in range (1, 31)]
+    LE_Disp_Imp1 = [0.25*x for x in range (1, 9)]
+    LE_Disp_Imp2 = [0.25*x for x in range (1, 17)]
+    LE_Disp_Imp3 = [0.50*x for x in range (1, 31)]
     
     #Lista de funções de condutividade térmica.
-    LLMD = [ASTMC1728.lamed,
-            NBR10662.lamedII, NBR10662.lamedIII,
-            NBR10412.lamed60, NBR10412.lamed100,
-            NBR11357.lamed,
-            NBR11363.lamed,
-            NBR11722.lamed]
+    #Fibra cerâmica.
+    LLMD1 = [NBR9688.lamed64,
+             NBR9688.lamed96,
+             NBR9688.lamed128,
+             NBR9688.lamed160,
+             NBR9688.lamed192]
+    #Isolantes flexíveis.
+    LLMD2 = [ASTMC1728.lamed,
+             NBR10412.lamed60,
+             NBR10412.lamed100,
+             NBR11357.lamed,
+             NBR11363.lamed,
+             NBR11722.lamed]
+    #Isolantes rígidos.
+    LLMD3 = [NBR10662.lamedII,
+             NBR10662.lamedIII]
     
     #Lista de nomes de isolantes.
-    Lnm = ['Aerogel',
-           'Silicato de Cálcio Tipo II',
-           'Silicato de Cálcio Tipo III',
-           'Feltro de Lamelas de Lã de Vidro D60',
-           'Feltro de Lamelas de Lã de Vidro D100',
-           'Tubo de Lã de Vidro',
-           'Tubo de Lã de Rocha',
-           'Feltro de Lamelas de Lã de Rocha']
+    #Fibra cerâmica.
+    Lnm1 = ['Manta de Fibra Cerâmica D64',
+            'Manta de Fibra Cerâmcia D96',
+            'Manta de Fibra Cerâmica D128',
+            'Manta de Fibra Cerâmica D160',
+            'Manta de Fibra Cerâmica D192']
+    #Isolantes flexívies.
+    Lnm2 = ['Aerogel',
+            'Feltro de Lamelas de Lã de Vidro D60',
+            'Feltro de Lamelas de Lã de Vidro D100',
+            'Tubo de Lã de Vidro',
+            'Tubo de Lã de Rocha',
+            'Feltro de Lamelas de Lã de Rocha']
+    #Isolantes rígidos.
+    Lnm3 = ['Silicato de Cálcio Tipo II',
+            'Silicato de Cálcio Tipo III']
     
     #Número de espessuras consideradas.
-    ne = len(LE)
+    ne1 = len(LE1)
+    ne2 = len(LE2)
+    ne3 = len(LE3)
     
     #Número de isolantes considerados.
-    ni = len(LLMD)
+    ni1 = len(LLMD1)
+    ni2 = len(LLMD2)
+    ni3 = len(LLMD3)    
     
     #Lista de espessuras para o DataFrame.
-    LE_Disp_DF = [0] + LE_Disp*ni
-    LE_Disp_Imp_DF = [0] + LE_Disp_Imp*ni
+    LE_Disp_DF = [0] + LE_Disp1*ni1 + LE_Disp2*ni2 + LE_Disp3*ni3
+    LE_Disp_Imp_DF = [0] + LE_Disp_Imp1*ni1 + LE_Disp_Imp2*ni2 + LE_Disp_Imp3*ni3
     
     #Lista de nomes para o DataFrame.
     LNM = ['Sem Isolante']
     
-    for d in Lnm:
-        
-        LNM += [d]*ne
+    for d in Lnm1: 
+        LNM += [d]*ne1
+    for d in Lnm2:
+        LNM += [d]*ne2
+    for d in Lnm3:
+        LNM += [d]*ne3
     
     #Lista de soluções para a temperatura na face externa.
     LTe = []
@@ -318,8 +350,26 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         
         errf = generate_err_tubes_for_h
         
-        for flmd in LLMD:
-            for E in LE:
+        for flmd in LLMD1:
+            for E in LE1:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD2:
+            for E in LE2:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD3:
+            for E in LE3:
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
                 root = optimize.brentq(err, Ta, Ti)
                 LTe = LTe + [root]
@@ -344,8 +394,26 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         
         errf = generate_err_tubes_for_v
         
-        for flmd in LLMD:
-            for E in LE:
+        for flmd in LLMD1:
+            for E in LE1:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_cv(U,Di + 2*E,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD2:
+            for E in LE2:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_cv(U,Di + 2*E,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD3:
+            for E in LE3:
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
                 root = optimize.brentq(err, Ta, Ti)
                 LTe = LTe + [root]
@@ -370,8 +438,26 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         
         errf = generate_err_tubes_nat_h
         
-        for flmd in LLMD:
-            for E in LE:
+        for flmd in LLMD1:
+            for E in LE1:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD2:
+            for E in LE2:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD3:
+            for E in LE3:
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
                 root = optimize.brentq(err, Ta, Ti)
                 LTe = LTe + [root]
@@ -396,15 +482,33 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         
         errf = generate_err_tubes_nat_v
         
-        for flmd in LLMD:
-            for E in LE:
+        for flmd in LLMD1:
+            for E in LE1:
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
                 root = optimize.brentq(err, Ta, Ti)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
                 Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
                 LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]            
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD2:
+            for E in LE2:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+        for flmd in LLMD3:
+            for E in LE3:
+                err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd)
+                root = optimize.brentq(err, Ta, Ti)
+                LTe = LTe + [root]
+                Lslmd = Lslmd + [flmd((root + Ti)/2)]
+                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
+                LDe = LDe + [Di + 2*E]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
             
     #Diâmetros externos em milímetros.
     LDe_Disp = [1000*D for D in LDe]

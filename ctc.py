@@ -68,7 +68,7 @@ def Ra(Lc, Te, Ta):
 
     psi = ar.psi(Tf)
 
-    DT = Te - Ta
+    DT = abs(Te - Ta)
 
     Ra = psi*(Lc**3)*DT
 
