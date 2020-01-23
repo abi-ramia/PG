@@ -42,6 +42,9 @@ c = wtr.cp(Ti)
 #Variação máxima admissível de temperatura da água em °C. Se == 0.
 Dt_max = 0
 
+#Resitência térmica da seção de revestimento protetivo. m.K/W.
+R_rev = 1e-4
+
 if True:
-    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max)
+    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')

@@ -49,6 +49,9 @@ ts_max = 0
 #Variação máxima admissível de temperatura do fluido [°C]. Se == 0 ou houver mudança de fase, ignorada.
 Dt_max = 0
 
+#Resitência térmica da seção de revestimento protetivo. m.K/W.
+R_rev = 1e-5
+
 if True:
-    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max)
+    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')
