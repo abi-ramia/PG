@@ -39,12 +39,15 @@ h_fld = wtr.hc(m, di, Ti, 0)
 #Calor específico em J/(kg.K) da água. Pode ser importado de wtr.py.
 c = wtr.cp(Ti)
 
-#Variação máxima admissível de temperatura da água em °C. Se == 0.
+#Variação máxima admissível de temperatura da água em °C. Ignorado se == 0.
 Dt_max = 0
 
 #Resitência térmica da seção de revestimento protetivo. m.K/W.
 R_rev = 1e-4
 
+#Umidade relativa.
+RH = 0.80
+
 if True:
-    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev)
+    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')

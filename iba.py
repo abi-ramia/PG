@@ -5,6 +5,7 @@ import numpy as np
 from scipy import optimize
 import ctc
 import rt
+import wtr
 import ASTMC534
 import ASTMC552
 import ASTMC591
@@ -229,7 +230,7 @@ def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
 # Função principal.
 # =============================================================================
 
-def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev):
+def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH):
     
     Di = de
     
@@ -478,6 +479,9 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Disp['Variação de Temperatura \n do Fluido [°C]'] = LVT_Disp
     LTS = list(map(lambda x: Ti - 273.15 - x, LVT))
     Disp['Temperatura do Fluido \n na Saída [°C]'] = LTS
+    
+    LFL = [wtr.fl(x, Ta, RH) for x in LTe]
+    Disp['Temperatura da Face Externa \n Inferior a do Ponto de Orvalho?'] = LFL
     
     Disp['Fluxo de Calor \n [W/m]'] = Lq
     

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import math
+import numpy as np
 from scipy import optimize
 
 # =============================================================================
-# Propriedades da Água Líquida.
+# Propriedades da Água Líquida. Referências [017], [019], [020], [021] e [022].
 # =============================================================================
 
 #Massa específica. Entrada em K, saída em kg/m^3.
@@ -132,3 +133,28 @@ def hc(m, D, T, e):
     h = NuD*k/D
     
     return(h)
+
+# =============================================================================
+# Ponto de Orvalho da Água. Referências [025] e [026].
+# =============================================================================
+
+#Calcula a temperatura do ponto de orvalho. Entrada em K e 1, saída em K.
+def TDP(T, RH):
+    
+    t = T - 273.15
+    
+    b = 17.368
+    c = 238.88
+    d = 234.5
+    
+    gamma = np.log(RH*np.exp((b - (t/d))*(t/(c + t))))
+    
+    dp = c*gamma/(b - gamma)
+    
+    return(dp + 273.15)
+
+def fl(Te, Ta, RH):
+    
+    if (Te) < (TDP(Ta, RH)):
+        return ("Sim")
+    return ("Não")
