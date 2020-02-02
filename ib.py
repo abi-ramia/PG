@@ -564,7 +564,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         Disp['Temperatura do Fluido \n na Saída [°C]'] = LTS
     
     if (fase_change):
-        LFC = list(map(lambda x: (x*z)/c_or_h, Lq))
+        LFC = [(x*z)/c_or_h if (x*z)/c_or_h < m else m for x in Lq]
         Disp['Formação de \n Condensado [kg/s]'] = LFC
     
     Disp['Fluxo de Calor \n [W/m]'] = Lq

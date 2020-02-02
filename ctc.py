@@ -59,7 +59,7 @@ def Re(U, Lc, Te, Ta):
     return(Re)
 
 # =============================================================================
-# Número de Rayleigh. Input em 1/(m^3.K), m e K, output em 1.
+# Número de Rayleigh. Input em m e K, output em 1.
 # =============================================================================
 
 def Ra(Lc, Te, Ta):
@@ -74,7 +74,35 @@ def Ra(Lc, Te, Ta):
 
     return(Ra)
 
+# =============================================================================
+# Número de Grashof. Input em m e K, output em 1.
+# =============================================================================
 
+def Gr(Lc, Te, Ta):
+    
+    Tf = (Te + Ta)/2
+    
+    Ray = Ra(Lc, Te, Ta)
+    
+    Pra = ar.Pr(Tf)
+    
+    Gra = Ray/Pra
+    
+    return (Gra)
+
+# =============================================================================
+# Número de Richardson. Input em m/s, m e m^2/s, output em 1.
+# =============================================================================
+
+def Ri(U, Lc, Te, Ta):
+    
+    Gra = Gr(Lc, Te, Ta)
+    
+    Rey = Re(U, Lc, Te, Ta)
+    
+    Ric = Gra/(Rey**2)
+    
+    return (Ric)
 
 # =============================================================================
 # Radiação.
@@ -87,7 +115,7 @@ def Ra(Lc, Te, Ta):
 
 def hr(epsilon, Te, Ta):
 
-    sigma = 5.670367e-08
+    sigma = 5.670374e-08
 
     T = ((Te)**2+(Ta)**2)*(Te + Ta)
 
