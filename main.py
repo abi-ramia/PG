@@ -29,7 +29,7 @@ U = 3
 H = 0
 
 #comprimento da tubulação em m.
-z = 500
+z = 1000
 
 #Emissividade da superfície. Pode ser importada de ctc.py.
 eps = ctc.emissividade('Alumínio')
@@ -49,9 +49,12 @@ ts_max = 0
 #Variação máxima admissível de temperatura do fluido [°C]. Se == 0 ou houver mudança de fase, ignorada.
 Dt_max = 0
 
-#Resitência térmica da seção de revestimento protetivo. m.K/W.
+#Resitência térmica da seção de revestimento protetivo em m.K/W.
 R_rev = 1e-5
 
+#Taxa máxima admissível de transferência de calor em W. Se == 0, ignorada.
+Q_max = 800000
+
 if True:
-    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev)
+    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')

@@ -232,7 +232,7 @@ def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
 # Função principal.
 # =============================================================================
 
-def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev):
+def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max):
     
     Di = de
     
@@ -531,6 +531,18 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         ZTR = zip(LLMTD, LR)
         #Lq está em W/m, LR deve ser multiplicado por z.
         Lq = [x[0]/(x[1]*z) for x in ZTR]
+    
+    if Q_max > 0:
+        for i in range(len(Lq) - 1, 0, -1):
+            if Lq[i] > Q_max/z:
+                del Lq[i]
+                del LNM[i]
+                del LE_Disp_DF[i]
+                del LE_Disp_Imp_DF[i]
+                del LDe_Disp[i]
+                del Lte[i]
+                del Lslmd[i]
+                del LR[i]
     
     if ts_max > 0:
         for i in range(len(Lq) - 1, 0, -1):
