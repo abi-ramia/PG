@@ -35,7 +35,7 @@ z = 500
 eps = ctc.emissividade('Alumínio')
 
 #Mudança [True] ou não [False] de fase.
-fase_change = True
+fase_change = False
 
 #Vazão mássica de fluido em kg/s.
 m = 35

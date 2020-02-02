@@ -452,6 +452,15 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Lista de soluções para a temperatura na face externa em °C.
     Lte = [(Te - 273.15) for Te in LTe]
     
+    #Lista de q através de LMTD e R.
+
+    LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),LR))
+    LTSK = list(map(lambda x: Ti - x, LVT))
+    LLMTD = [((x - Ta) - (Ti - Ta))/(np.log((x - Ta)/(Ti - Ta))) for x in LTSK]
+    ZTR = zip(LLMTD, LR)
+    #Lq está em W/m, LR deve ser multiplicado por z.
+    Lq = [x[0]/(x[1]*z) for x in ZTR]
+    
     if Dt_max > 0:
         LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c*x))),LR))
         for i in range(len(LVT) - 1, 0, -1):
