@@ -267,7 +267,6 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
              NBR11722.lamed]
     #Isolantes rígidos.
     LLMD3 = [NBR10662.lamedII,
-             NBR10662.lamedIII,
              ASTMC610.lamed,
              ASTMC552.lamed,
              ASTMC591.lamed]
@@ -288,7 +287,6 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
             'Feltro de Lamelas de \n Lã de Rocha']
     #Isolantes rígidos.
     Lnm3 = ['Silicato de Cálcio \n Tipo II',
-            'Silicato de Cálcio \n Tipo III',
             'Perlita Expandida',
             'Vidro Celular',
             'Poliisocianurato']
