@@ -17,13 +17,13 @@ Ti = 250 + 273.15
 Ta = 24 + 273.15
 
 #Coeficiente de convecção do escoamento interno à tubulação em SI.
-h_fld = 10
+h_fld = 75
 
 #Condutividade térmica do material da tubulaçãoem SI.
 lmd_tube = 60
 
 #Velocidade do vento em m/s. Caso convecção natural, U = 0.
-U = 3
+U = 6
 
 #Altura da tubulação em m, caso vertical.
 H = 0
@@ -53,8 +53,10 @@ Dt_max = 0
 R_rev = 1e-5
 
 #Taxa máxima admissível de transferência de calor em W. Se == 0, ignorada.
-Q_max = 800000
+Q_max = 0
+
+(N, F, eta, n, i, delta, tm) = (400, 3.5e-9, 0.80, 10, 0.15, 0.08, 0.02)
 
 if True:
-    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max)
+    result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max, N, F, eta, n, i, delta, tm)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')

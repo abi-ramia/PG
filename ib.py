@@ -15,10 +15,40 @@ import NBR10662
 import NBR11357
 import NBR11363
 import NBR11722
+import cst
 
-#TODO Adicionar resistência do revestimento de proteção.
 #TODO Adicionar análise econômica.
 #TODO Pivotear por menor custo.
+
+# =============================================================================
+# Custos.
+# =============================================================================
+
+#Custo de energia perdida trazido para valor atual em $/(ano.m^2).
+def CE_VA(q, N, F, eta, n, i, delta):
+    
+    CE = (3600*q*N*F)/eta
+    
+    j = ((1 + i)/(1 + delta)) - 1
+    
+    f = (((1 + j)**n) - 1)/(j*((1 + j)**n))
+    
+    CEVA = f*CE
+    
+    return (CEVA)
+
+#Custo de manutenção do isolamento em $/(ano.m^2).
+def CM_VA(CI, tm, n, i):
+    
+    CM = tm*CI
+    
+    f = (((1+i)**n)-1)/(i*((1+i)**n))
+    
+    CMVA = f*CM
+    
+    return (CMVA)
+
+
 
 # =============================================================================
 # Tubulações horizontais em convecção combinada.
@@ -232,7 +262,7 @@ def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
 # Função principal.
 # =============================================================================
 
-def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max):
+def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max, N, F, eta, n, i, delta, tm):
     
     Di = de
     
@@ -530,6 +560,45 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         #Lq está em W/m, LR deve ser multiplicado por z.
         Lq = [x[0]/(x[1]*z) for x in ZTR]
     
+    #Análise econômica.
+    #Custo de energia perdida atualizada.
+    LCEVA = [CE_VA(q, N, F, eta, n, i, delta) for q in Lq]
+    #Custo de investimento.
+    #Fibra cerâmica.
+    LFCI1 = [cst.cst_null,
+            cst.cst_null,
+            cst.cst_null,
+            cst.cst_null,
+            cst.cst_null]
+    #Isolantes flexíveis.
+    LFCI2 = [cst.cst_null,
+            cst.cst_null,
+            cst.cst_null,
+            cst.cst_null,
+            cst.cst_null,
+            cst.cst_null]
+    #Isolantes rígidos.
+    LFCI3 = [cst.cst_NBR10662,
+            cst.cst_null,
+            cst.cst_C552, 
+            cst.cst_C591]
+    LCI = [0]
+    for ci in LFCI1:
+        for E in LE1:
+            LCI = LCI + [ci(Di, E)]
+    for ci in LFCI2:
+        for E in LE2:
+            LCI = LCI + [ci(Di, E)]
+    for ci in LFCI3:
+        for E in LE3:
+            LCI = LCI + [ci(Di, E)]
+    #Custo de manutenção.
+    LCMVA = [CM_VA(CI, tm, n, i) for CI in LCI]
+    #Custo total.
+    LCT = [x + y + z for (x,y,z) in zip(LCEVA, LCI, LCMVA)]
+    
+    #Exclusão de casos reprovados.
+    
     if Q_max > 0:
         for i in range(len(Lq) - 1, 0, -1):
             if Lq[i] > Q_max/z:
@@ -541,6 +610,10 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 del Lte[i]
                 del Lslmd[i]
                 del LR[i]
+                del LCEVA[i]
+                del LCI[i]
+                del LCMVA[i]
+                del LCT[i]
     
     if ts_max > 0:
         for i in range(len(Lq) - 1, 0, -1):
@@ -553,6 +626,10 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 del Lte[i]
                 del Lslmd[i]
                 del LR[i]
+                del LCEVA[i]
+                del LCI[i]
+                del LCMVA[i]
+                del LCT[i]
     
     if Dt_max > 0 and not(fase_change):
         LVT = list(map(lambda x: Ti - (Ta - (Ta - Ti)*np.exp(-1/(m*c_or_h*x))),LR))
@@ -567,6 +644,10 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 del Lte[i]
                 del Lslmd[i]
                 del LR[i]
+                del LCEVA[i]
+                del LCI[i]
+                del LCMVA[i]
+                del LCT[i]
     
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
@@ -588,42 +669,13 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     
     Disp['Fluxo de Calor \n [W/m]'] = Lq
     
+    #Análise econômica    
+    Disp['Custo de Energia \n [$/m]'] = LCEVA
+    Disp['Custo de Investimento \n [$/m]'] = LCI
+    Disp['Custo de Manutenção \n [$/m]'] = LCMVA
+    Disp['Custo Total \n [$/m]'] = LCT
+
     return Disp
-
-
-
-# =============================================================================
-# Custos.
-# =============================================================================
-
-#Custo de energia perdida trazido para valor atual em $/(ano.m^2).
-def CE_VA(q, N, F, eta, n, i, delta):
-    
-    CE = (3600*q*N*F)/eta
-    
-    j = ((1 + i)/(1 + delta)) - 1
-    
-    f = (((1 + j)**n) - 1)/(j*((1 + j)**n))
-    
-    CEVA = f*CE
-    
-    return (CEVA)
-
-#Custo de investimanto no isolamento em $/(ano.m^2).
-def CI_VA(nome, Di, De):
-    
-    return (True)
-
-#Custo de manutenção do isolamento em $/(ano.m^2).
-def CM_VA(CIVA, tm, n, i):
-    
-    CM = tm*CIVA
-    
-    f = (((1+i)**n)-1)/(i*((1+i)**n))
-    
-    CMVA = f*CM
-    
-    return (CMVA)
 
 
 
