@@ -17,7 +17,6 @@ import NBR11363
 import NBR11722
 import cst
 
-#TODO Adicionar análise econômica.
 #TODO Pivotear por menor custo.
 
 # =============================================================================
@@ -566,22 +565,22 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     #Custo de investimento.
     #Fibra cerâmica.
     LFCI1 = [cst.cst_null,
-            cst.cst_null,
-            cst.cst_null,
-            cst.cst_null,
-            cst.cst_null]
+             cst.cst_null,
+             cst.cst_null,
+             cst.cst_null,
+             cst.cst_null]
     #Isolantes flexíveis.
     LFCI2 = [cst.cst_null,
-            cst.cst_null,
-            cst.cst_null,
-            cst.cst_null,
-            cst.cst_null,
-            cst.cst_null]
+             cst.cst_null,
+             cst.cst_null,
+             cst.cst_null,
+             cst.cst_null,
+             cst.cst_null]
     #Isolantes rígidos.
     LFCI3 = [cst.cst_NBR10662,
-            cst.cst_null,
-            cst.cst_C552, 
-            cst.cst_C591]
+             cst.cst_null,
+             cst.cst_C552, 
+             cst.cst_C591]
     LCI = [0]
     for ci in LFCI1:
         for E in LE1:
@@ -668,35 +667,14 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
         Disp['Formação de \n Condensado [kg/s]'] = LFC
     
     Disp['Fluxo de Calor \n [W/m]'] = Lq
-    
-    #Análise econômica    
+        
     Disp['Custo de Energia \n [$/m]'] = LCEVA
     Disp['Custo de Investimento \n [$/m]'] = LCI
     Disp['Custo de Manutenção \n [$/m]'] = LCMVA
     Disp['Custo Total \n [$/m]'] = LCT
-
+    
+    #Disp = Disp.sort_values(by=['Custo Total \n [$/m]'])
+    
+    Disp = Disp.iloc[[0]].append(Disp.iloc[1:].sort_values(by=['Custo Total \n [$/m]']))
+    
     return Disp
-
-
-
-# =============================================================================
-# Tubulações quaisquer.
-# =============================================================================
-
-#def iso_tubes(Ti, Ta, Di, H, U, eps, N, F, eta, n, i, delta):
-#    
-#    if (U != 0):
-#        
-#        Disp = iso_tubes_for(Ti, Ta, Di, U, eps)
-#        
-#    if ((U == 0) and (H != 0)):
-#        
-#        Disp = iso_tubes_nat_v(Ti, Ta, H, Di, eps)
-#        
-#    if ((U == 0) and (H == 0)):
-#        
-#        Disp = iso_tubes_nat_h(Ti, Ta, Di, eps)
-#    
-#    Disp['Custo de Energia Perdida [$/(ano.m^2)]'] = Disp['Fluxo de Calor (Face Externa) [W/m^2]'].apply(lambda x : CE_VA(x, N, F, eta, n, i, delta))
-#    
-#    return Disp

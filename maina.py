@@ -48,6 +48,8 @@ R_rev = 1e-4
 #Umidade relativa.
 RH = 0.80
 
+(N, CEE, eta, COP, n, i, delta, tm) = (400, 0.12, 0.80, 4, 10, 0.15, 0.08, 0.02)
+
 if True:
-    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH)
+    result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, delta, tm)
     #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')
