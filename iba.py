@@ -294,9 +294,6 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Lista de diâmetros externos.
     LDe = [de]
     
-    #Lista de taxas de formação de condensado.
-    LFC = []
-    
     #Lista de resistências térmicas.
     LR = []
     
@@ -475,6 +472,19 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
                 del Lslmd[i]
                 del LR[i]
     
+    LFL = [wtr.fl(x, Ta, RH) for x in LTe]
+    for i in range(len(LFL) - 1,  0, -1):
+        if (LFL[i]) == "Sim":
+            del LVT[i]
+            del Lq[i]
+            del LNM[i]
+            del LE_Disp_DF[i]
+            del LE_Disp_Imp_DF[i]
+            del LDe_Disp[i]
+            del Lte[i]
+            del Lslmd[i]
+            del LR[i]
+    
     #Organização dos dados em um DataFrame.
     Disp = pd.DataFrame({'Material' : LNM,
                          'Espessura \n [mm]' : LE_Disp_DF,
@@ -488,9 +498,6 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     Disp['Variação de Temperatura \n do Fluido [°C]'] = LVT_Disp
     LTS = list(map(lambda x: Ti - 273.15 - x, LVT))
     Disp['Temperatura do Fluido \n na Saída [°C]'] = LTS
-    
-    LFL = [wtr.fl(x, Ta, RH) for x in LTe]
-    Disp['Temperatura da Face Externa \n Inferior a do Ponto de Orvalho?'] = LFL
     
     Disp['Fluxo de Calor \n [W/m]'] = Lq
     
