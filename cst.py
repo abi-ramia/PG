@@ -124,7 +124,7 @@ def samples_C534():
     LD = list(zip(LDi, LDe))
     LA = [np.pi*(x[1]**2 - x[0]**2)/4 for x in LD]
     LAM = [x*25.4*25.4/1000000 for x in LA]
-    LC = [10*2.500, 10*3.750, 10*4.905]
+    LC = [10*2.500, 10*3.000, 10*3.750]
     return (LAM, LC)
 
 #Interpolação dos ln.

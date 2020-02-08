@@ -17,13 +17,13 @@ def rho(T):
     
     b = 344.84/(T**2)
     
-    rho = a + b
+    RHO = a + b
     
-    return(rho)
+    return(RHO)
 
 # =============================================================================
 # Viscosidade dinâmica. Input em K, output em (N.s)/m^2. Referência [002] -
-# Reid, RobertC., Sherwood, ThomasK., (1966) - The Properties of Gases and
+# Reid, Robert C., Sherwood, Thomas K., (1966) - The Properties of Gases and
 # Liquids, McGraw-Hill.
 # =============================================================================
 
@@ -33,9 +33,9 @@ def mi(T):
     
     b = 109.10 + T
     
-    mi = (a/b)*(10**(-6))
+    MI = (a/b)*(10**(-6))
     
-    return(mi)
+    return(MI)
     
 # =============================================================================
 # Condutividade térmica. Input em K, outpit em W/(m.K). Referência [002] -
@@ -49,9 +49,9 @@ def lamed(T):
     
     b = 164.54 + T
     
-    lamb = a/b
+    LAMED = a/b
     
-    return(lamb)
+    return(LAMED)
 
 # =============================================================================
 # Calor específico. Input em K, output em J/(kg.K).
@@ -65,9 +65,9 @@ def cp(T):
     
     c = 3.9734*(T**2)*(10**(-4))
     
-    cp = a - b + c
+    CP = a - b + c
     
-    return(cp)
+    return(CP)
     
 # =============================================================================
 # Viscosidade Cinemática. Input em K, output em m^2/s.
@@ -81,9 +81,9 @@ def nu(T):
     
     c = a + b
     
-    nu = c**(-1)
+    NU = c**(-1)
     
-    return(nu)
+    return(NU)
   
 # =============================================================================
 # Aceleração gravitacional vezes coeficiente de expansão sobre o produto entre
@@ -101,9 +101,9 @@ def psi(T):
     
     d = (a - b + c)**2
     
-    psi = (10**6)/d
+    PSI = (10**6)/d
     
-    return(psi)
+    return(PSI)
 
 # =============================================================================
 # Difusividade térmica. Input em K, output em m^2/s.
@@ -119,9 +119,9 @@ def alpha(T):
     
     d = - a + b + c
     
-    alpha = d*(10**(-6))
+    ALPHA = d*(10**(-6))
     
-    return(alpha)
+    return(ALPHA)
 
 # =============================================================================
 # Número de Prandtl. Input em K, output em 1.
@@ -133,9 +133,9 @@ def Pr(T):
     
     b = alpha(T)
     
-    Pr = a/b
+    PR = a/b
     
-    return(Pr)
+    return(PR)
 
 # =============================================================================
 # Lista de propriedades do ar. Input em K, output em unidades previamente

@@ -3,8 +3,8 @@
 import numpy as np
 
 # =============================================================================
-# Propriedades de tubos flexíveis de aerogel. 
-# Referência [018] - NIA Insulation Materials Spec Chart - ASTM C1728.
+# Propriedades de PIR. 
+# Referência [018] - NIA Insulation Materials Spec Chart - ASTM C591.
 # =============================================================================
 
 def lin(t, t2, t1, l2, l1):
@@ -18,7 +18,7 @@ def lin(t, t2, t1, l2, l1):
     return(a + b*x)
     
 # =============================================================================
-# Termoisolantes Tipo III, Grau 2. Temperatura máxima de utilização de 650 °C.
+# Temperatura máxima de utilização de 650 °C.
 # Intervalo de temperatura média para o cálculo da condutividade térmica de
 # 24 °C a 316 °C.
 # =============================================================================

@@ -248,19 +248,19 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     
     #Lista de funções de condutividade térmica.
     #Isolantes flexíveis.
-    LLMD2 = [ASTMC1728a.lamed]
+    LLMD2 = [ASTMC1728a.lamed,
+             ASTMC534.lamed]
     #Isolantes rígidos.
     LLMD3 = [ASTMC552.lamed,
-             ASTMC591.lamed,
-             ASTMC534.lamed]
+             ASTMC591.lamed]
     
     #Lista de nomes de isolantes.
     #Isolantes flexívies.
-    Lnm2 = ['Aerogel']
+    Lnm2 = ['Aerogel',
+            'Espuma Elastomérica']
     #Isolantes rígidos.
     Lnm3 = ['Vidro Celular',
-            'Poliisocianurato',
-            'Espuma Elastomérica']
+            'Poliisocianurato']
     
     #Número de espessuras consideradas.
     ne2 = len(LE2)

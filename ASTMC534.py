@@ -18,7 +18,7 @@ def lin(t, t2, t1, l2, l1):
     return(a + b*x)
     
 # =============================================================================
-# Termoisolantes Grau I. Temperatura máxima de utilização de 105 °C.
+# Termoisolantes Grau III. Temperatura máxima de utilização de 105 °C.
 # Intervalo de temperatura média para o cálculo da condutividade térmica de
 # -17 °C a 93 °C.
 # =============================================================================
