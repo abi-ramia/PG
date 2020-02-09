@@ -12,9 +12,6 @@ import ASTMC591
 import ASTMC1728a
 import cst
 
-#TODO Adicionar análise econômica.
-#TODO Pivotear por menor custo.
-
 # =============================================================================
 # Custos.
 # =============================================================================
@@ -118,7 +115,6 @@ def generate_err_tubes_for_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         TDi = Tde
         
-        #TODO Caso se adicione manta de proteção, mude esta linha.
         TDe = Te + R_rev*qdp
         
         lmd_iso = flmd((TDe + TDi)/2)
@@ -171,7 +167,6 @@ def generate_err_tubes_nat_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         TDi = Tde
         
-        #TODO Caso se adicione manta de proteção, mude esta linha.
         TDe = Te + R_rev*qdp
         
         lmd_iso = flmd((TDe + TDi)/2)
@@ -224,7 +219,6 @@ def generate_err_tubes_nat_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         TDi = Tde
         
-        #TODO Caso se adicione manta de proteção, mude esta linha.
         TDe = Te + R_rev*qdp
         
         lmd_iso = flmd((TDe + TDi)/2)
