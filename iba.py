@@ -497,7 +497,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Isolantes rígidos.
     LFCI3 = [cst.cst_C552, 
              cst.cst_C591]
-    LCI = [0]
+    LCI = [np.nan]
     for ci in LFCI2:
         for E in LE2:
             LCI = LCI + [ci(Di, E)]
@@ -570,5 +570,14 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
     #Disp = Disp.sort_values(by=['Custo Total \n [$/m]'])
     
     Disp = Disp.iloc[[0]].append(Disp.iloc[1:].sort_values(by=['Custo Total \n [$/m]']))
+    
+    if (len(Lq) >= 24):
+        LA = ['Ti', 'Ponto de Orvalho', 'di', 'de', 'Ta', 'h_fld', 'lmd_tube', 'U', 'H', 'z', 'eps', 'm', 'c', 'Dt_max', 'R_rev', 'RH', 'N', 'CEE', 'eta', 'COP', 'n', 'i', 'delta', 'tm']
+        LB = [Ti, wtr.TDP(Ta, RH), di, de, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, delta, tm]
+        while len(LA) < len(Lq):
+            LA.append(np.nan)
+            LB.append(np.nan)
+        Disp.insert(loc = 0, column = 'Input', value = LB)
+        Disp.insert(loc = 0, column = 'Varáivel', value = LA)
     
     return Disp

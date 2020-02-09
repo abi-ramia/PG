@@ -52,4 +52,4 @@ RH = 0.80
 
 if True:
     result = iba.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev, RH, N, CEE, eta, COP, n, i, delta, tm)
-    #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')
+    result.to_excel("resultado_a.xlsx", sheet_name='IsoBrás', index = False, startcol = 0, freeze_panes = (2,2))

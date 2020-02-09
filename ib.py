@@ -581,7 +581,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
              cst.cst_null,
              cst.cst_C552, 
              cst.cst_C591]
-    LCI = [0]
+    LCI = [np.nan]
     for ci in LFCI1:
         for E in LE1:
             LCI = LCI + [ci(Di, E)]
@@ -676,5 +676,14 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     #Disp = Disp.sort_values(by=['Custo Total \n [$/m]'])
     
     Disp = Disp.iloc[[0]].append(Disp.iloc[1:].sort_values(by=['Custo Total \n [$/m]']))
+    
+    if (len(Lq) >= 25):
+        LA = ['Ti', 'di', 'de', 'Ta', 'h_fld', 'lmd_tube', 'U', 'H', 'z', 'eps', 'fase_change', 'm', 'c_or_h', 'ts_max', 'Dt_max', 'R_rev', 'Q_max', 'N', 'F', 'eta', 'n', 'i', 'delta', 'tm']
+        LB = [Ti, di, de, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max, N, F, eta, n, i, delta, tm]
+        while len(LA) < len(Lq):
+            LA.append(np.nan)
+            LB.append(np.nan)
+        Disp.insert(loc = 0, column = 'Input', value = LB)
+        Disp.insert(loc = 0, column = 'Varáivel', value = LA)
     
     return Disp

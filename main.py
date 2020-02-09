@@ -59,4 +59,4 @@ Q_max = 0
 
 if True:
     result = ib.iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_or_h, ts_max, Dt_max, R_rev, Q_max, N, F, eta, n, i, delta, tm)
-    #result.to_excel("resultado.xlsx", sheet_name='Todos_os_Isolantes')
+    result.to_excel("resultado.xlsx", sheet_name='IsoBrás', index = False, startcol = 0, freeze_panes = (2,2))
