@@ -12,6 +12,8 @@ import ASTMC591
 import ASTMC1728a
 import cst
 
+#TODO Fix major bug!
+
 # =============================================================================
 # Custos.
 # =============================================================================
@@ -51,11 +53,13 @@ def generate_err_tubes_for_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
     
     Di = de
     
+    De = Di + 2*E
+    
     def err_tubes_for(Te):
         
-        qdpp = ctc.qc_m_ch(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta)
+        qdpp = ctc.qc_m_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta)
         
-        qdp = qdpp*(np.pi*(Di + 2*E))
+        qdp = qdpp*(np.pi*(De))
         
         Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
         
@@ -67,7 +71,7 @@ def generate_err_tubes_for_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         lmd_iso = flmd((TDe + TDi)/2)
         
-        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso) + R_rev)
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, De, lmd_iso) + R_rev)
         
         return (Te - Te_calc)
     
@@ -103,11 +107,13 @@ def generate_err_tubes_for_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
     
     Di = de
     
+    De = Di + 2*E
+    
     def err_tubes_for(Te):
         
-        qdpp = ctc.qc_m_cv(U, Di + 2*E, H, Te, Ta) + ctc.qr(eps, Te, Ta)
+        qdpp = ctc.qc_m_cv(U, De, H, Te, Ta) + ctc.qr(eps, Te, Ta)
         
-        qdp = qdpp*(np.pi*(Di + 2*E))
+        qdp = qdpp*(np.pi*(De))
         
         Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
         
@@ -119,7 +125,7 @@ def generate_err_tubes_for_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         lmd_iso = flmd((TDe + TDi)/2)
         
-        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso) + R_rev)
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, De, lmd_iso) + R_rev)
         
         return (Te - Te_calc)
     
@@ -155,11 +161,13 @@ def generate_err_tubes_nat_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
     
     Di = de
     
+    De = Di + 2*E
+    
     def err_tubes_nat_h(Te):
         
-        qdpp = ctc.qc_n_ch(U, Di + 2*E, Te, Ta) + ctc.qr(eps, Te, Ta)
+        qdpp = ctc.qc_n_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta)
         
-        qdp = qdpp*(np.pi*(Di + 2*E))
+        qdp = qdpp*(np.pi*(De))
         
         Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
         
@@ -171,7 +179,7 @@ def generate_err_tubes_nat_h(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         lmd_iso = flmd((TDe + TDi)/2)
         
-        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso) + R_rev)
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, De, lmd_iso) + R_rev)
         
         return (Te - Te_calc)
     
@@ -207,11 +215,13 @@ def generate_err_tubes_nat_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
     
     Di = de
     
+    De = Di + 2*E
+    
     def err_tubes_nat_v(Te):
         
         qdpp = ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta)
         
-        qdp = qdpp*(np.pi*(Di + 2*E))
+        qdp = qdpp*(np.pi*(De))
         
         Tdi = Ti - qdp*rt.rt_conv_cili(di, h_fld)
         
@@ -223,7 +233,7 @@ def generate_err_tubes_nat_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
         
         lmd_iso = flmd((TDe + TDi)/2)
         
-        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, Di + 2*E, lmd_iso) + R_rev)
+        Te_calc = Ti - qdp*(rt.rt_conv_cili(di, h_fld) + rt.rt_cond_cili(di, de, lmd_tube) + rt.rt_cond_cili(Di, De, lmd_iso) + R_rev)
         
         return (Te - Te_calc)
     
@@ -345,22 +355,24 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         
         for flmd in LLMD2:
             for E in LE2:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_m_ch(U, De, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         for flmd in LLMD3:
             for E in LE3:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_m_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_m_ch(U, De, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_ch(U,De,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U != 0) and (H != 0)):
         
@@ -380,22 +392,24 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         
         for flmd in LLMD2:
             for E in LE2:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_cv(U,Di + 2*E,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_m_cv(U, De, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_cv(U,De,H,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         for flmd in LLMD3:
             for E in LE3:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_m_cv(U, Di + 2*E, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_m_cv(U,Di + 2*E,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_m_cv(U, De, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_m_cv(U,De,H,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U == 0) and (H == 0)):
         
@@ -415,22 +429,24 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         
         for flmd in LLMD2:
             for E in LE2:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_n_ch(U, De, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_n_ch(U,De,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         for flmd in LLMD3:
             for E in LE3:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_n_ch(U, Di + 2*E, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_ch(U,Di + 2*E,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_n_ch(U, De, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_n_ch(U,De,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         
     if ((U == 0) and (H != 0)):
         
@@ -450,22 +466,24 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, m, c, Dt_max, R_rev
         
         for flmd in LLMD2:
             for E in LE2:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
         for flmd in LLMD3:
             for E in LE3:
+                De = Di + 2*E
                 err = errf(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd, R_rev)
                 root = optimize.brentq(err, Ti, Ta)
                 LTe = LTe + [root]
                 Lslmd = Lslmd + [flmd((root + Ti)/2)]
-                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(Di + 2*E))]
-                LDe = LDe + [Di + 2*E]
-                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,Di + 2*E,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(Di + 2*E,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(Di + 2*E,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
+                Lq = Lq + [(ctc.qc_n_cv(U, H, root, Ta) + ctc.qr(eps, root, Ta))*(np.pi*(De))]
+                LDe = LDe + [De]
+                LR = LR + [(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube)+rt.rt_cond_cili(Di,De,flmd((root+Ti)/2))+R_rev+((((rt.rt_conv_cili(De,ctc.hc_n_cv(U,H,root,Ta)))**(-1))+((rt.rt_crad_cili(De,ctc.hr(eps,root,Ta)))**(-1)))**(-1)))/z]
             
     #Diâmetros externos em milímetros.
     LDe_Disp = [1000*D for D in LDe]
