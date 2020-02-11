@@ -17,8 +17,6 @@ import NBR11363
 import NBR11722
 import cst
 
-#TODO Fix major bug!
-
 # =============================================================================
 # Custos.
 # =============================================================================
@@ -244,7 +242,7 @@ def generate_err_tubes_nat_v(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps, E, flmd
     
     return (err_tubes_nat_v)
 
-#Caso sem isoalnte
+#Caso sem isolante.
 def generate_err_tubes_nat_v_si(di, de, Ti, Ta, h_fld, lmd_tube, U, H, eps):
     
     Di = de
