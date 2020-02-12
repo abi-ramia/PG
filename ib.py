@@ -374,6 +374,9 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     #Lista de temperaturas na saída.
     LTS = []
     
+    #Lista de temperaturas na face interna do isolante.
+    LTDI = []
+    
     if ((U != 0) and (H == 0)):
         
         errf0 = generate_err_tubes_for_h_si
@@ -398,6 +401,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -412,6 +416,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -426,6 +431,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -457,6 +463,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_cv(U, De, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -471,6 +478,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_cv(U, De, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -485,6 +493,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_m_cv(U, De, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -516,6 +525,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -530,6 +540,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -544,6 +555,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_ch(U, De, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -575,6 +587,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -589,6 +602,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -603,6 +617,7 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
                 LTe = LTe + [Te]
                 qdp = (ctc.qc_n_cv(U, H, Te, Ta) + ctc.qr(eps, Te, Ta))*(np.pi*(De))
                 TDi = Ti - qdp*(rt.rt_conv_cili(di,h_fld)+rt.rt_cond_cili(di,de,lmd_tube))
+                LTDI = LTDI + [TDi]
                 TDe = Te + R_rev*qdp
                 Tiso = (TDi + TDe)/2
                 Lslmd = Lslmd + [flmd(Tiso)]
@@ -663,6 +678,56 @@ def iso_tubes(di, de, Ti, Ta, h_fld, lmd_tube, U, H, z, eps, fase_change, m, c_o
     LCT = [x + y + z for (x,y,z) in zip(LCEVA, LCI, LCMVA)]
     
     #Exclusão de casos reprovados.
+    
+    LTMA1 = [1650 + 273.15,
+            1650 + 273.15,
+            1650 + 273.15,
+            1650 + 273.15,
+            1650 + 273.15]
+    LTMA2 = [650 + 273.15,
+            650 + 273.15,
+            650 + 273.15,
+            650 + 273.15,
+            550 + 273.15,
+            550 + 273.15]
+    LTMA3 = [815 + 273.15,
+            650 + 273.15,
+            425 + 273.15,
+            150 + 273.15]
+    LFlagTDI = []
+    for T in LTMA1:
+        for E in LE1:
+            if LTDI[len(LFlagTDI)] > T:
+                LFlagTDI.append(1)
+            else:
+                LFlagTDI.append(0)                   
+    for T in LTMA2:
+        for E in LE2:
+            if LTDI[len(LFlagTDI)] > T:
+                LFlagTDI.append(1)
+            else:
+                LFlagTDI.append(0) 
+    for T in LTMA3:
+        for E in LE3:
+            if LTDI[len(LFlagTDI)] > T:
+                LFlagTDI.append(1)
+            else:
+                LFlagTDI.append(0)
+    LFlagTDI = [0] + LFlagTDI
+    for i in range(len(LFlagTDI)-1, 0, -1):
+        if LFlagTDI[i] == 1:
+            del Lq[i]
+            del LNM[i]
+            del LE_Disp_DF[i]
+            del LE_Disp_Imp_DF[i]
+            del LDe_Disp[i]
+            del Lte[i]
+            del Lslmd[i]
+            del LR[i]
+            del LCEVA[i]
+            del LCI[i]
+            del LCMVA[i]
+            del LCT[i]
     
     if Q_max > 0:
         for i in range(len(Lq) - 1, 0, -1):
